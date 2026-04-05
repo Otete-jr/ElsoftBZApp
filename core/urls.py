@@ -16,18 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.models import User # Ongeza hii
-from django.http import HttpResponse # Ongeza hii
+from django.contrib.auth import get_user_model # Tumia hii badala ya User ya kawaida
+from django.http import HttpResponse
 
-# Hii ndio function ya kutengeneza admin
+# Hii itapata User Model yako sahihi (store.User) automatically
+User = get_user_model()
+
 def create_admin(request):
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser("admin", "admin@elsoft.com", "elsoft123")
-        return HttpResponse("Admin ametengenezwa!")
-    return HttpResponse("Admin tayari yupo.")
+    try:
+        if not User.objects.filter(username="admin").exists():
+            # Tunatengeneza admin hapa
+            User.objects.create_superuser("admin", "admin@elsoft.com", "elsoft123")
+            return HttpResponse("Admin ametengenezwa kikamilifu!")
+        else:
+            return HttpResponse("Admin tayari yupo kwenye mfumo.")
+    except Exception as e:
+        return HttpResponse(f"Kuna hitilafu: {str(e)}")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/store/', include('store.urls')),
-    path('setup-admin/', create_admin), # HAKIKISHA MSTARI HUU UPO HAPA
+    path('setup-admin/', create_admin),
 ]
