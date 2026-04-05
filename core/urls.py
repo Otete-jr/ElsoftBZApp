@@ -16,8 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/store/', include('store.urls')), # Hapa ndipo tunapata: /api/store/products/
 ]
+
+def create_admin(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@elsoft.com", "elsoft123")
+        return HttpResponse("Admin ametengenezwa!")
+    return HttpResponse("Admin tayari yupo.")
